@@ -1,0 +1,80 @@
+Dates of analyses: 6/17/15 to 7/2/15
+Person carrying out experiment: Tina Kelliher
+Haase Lab Computer File for full README: /Users/haase-admin/Documents/crypto_rnaseq/Replicate1_YEPD_timecourse/RNA-Seq_AnalysisLog_STAR_upd07022015
+
+*******************************************
+Analysis Pipeline
+*******************************************
+
+align()
+for FILE in `ls`
+do
+cd $FILE
+gzip -d *.gz
+cat *_R1_*.fastq > combined1.fastq
+cat *_R2_*.fastq > combined2.fastq
+mkdir STAR_out
+STAR --runThreadN 1 --runMode alignReads --genomeDir /Users/haase-admin/C_neoformans_H99_STAR_align_GTF/ --sjdbGTFfile /Users/haase-admin/C_neoformans_H99_STAR_align_GTF/cryptococcus_neoformans_var._grubii_h99__cna3__3_transcripts.gtf --readFilesIn ./combined1.fastq ./combined2.fastq --outFilterType BySJout --alignIntronMin 10 --alignIntronMax 2000 --outFileNamePrefix ./STAR_out/ --outSAMstrandField intronMotif --outFilterIntronMotifs RemoveNoncanonical
+rm combined1.fastq
+rm combined2.fastq
+gzip *.fastq
+cd STAR_out
+samtools view -h Aligned.out.sam > Aligned.out.bam
+samtools sort Aligned.out.bam Aligned.out.sorted
+samtools view -h Aligned.out.sorted.bam > Aligned.out.sorted.sam
+htseq-count --order=pos --stranded=no --mode=intersection-nonempty Aligned.out.sorted.sam /Users/haase-admin/C_neoformans_H99_STAR_align_GTF/cryptococcus_neoformans_var._grubii_h99__cna3__3_transcripts.gtf > $FILE.txt
+cuffquant /Users/haase-admin/C_neoformans_H99_STAR_align_GTF/cryptococcus_neoformans_var._grubii_h99__cna3__3_transcripts.gtf Aligned.out.sorted.sam
+rm Aligned.out.sam
+rm Aligned.out.bam
+rm Aligned.out.sorted.sam
+cd ..
+cd ..
+done
+
+{23 lines}
+
+*******************************************
+Normalization
+*******************************************
+
+cuffnorm /Users/haase-admin/C_neoformans_H99_STAR_align_GTF/cryptococcus_neoformans_var._grubii_h99__cna3__3_transcripts.gtf *.cxb
+
+*******************************************
+This file contains..
+*******************************************
+
+Raw reads aligned to the C. neoformans H99 genome using RNA-STAR
+                         C. neoformans var. grubii H99 genome and transcriptome files downloaded from the Broad on June 3, 2015 by CMK
+                                    
+Copy/pasted notes for STAR argument choices:
+	--runThreadN 1						default value
+	--runMode alignReads						default argument; specification for clarity to future users
+	--genomeDir /Users/haase-admin/C_neoformans_H99_STAR_align_GTF/				path to reference genome directory; built on 6/3/15 (see H99 genome readme file in that directory)
+	--sjdbGTFfile /Users/haase-admin/C_neoformans_H99_STAR_align_GTF/cryptococcus_neoformans_var._grubii_h99__cna3__3_transcripts.gtf	according to the STAR manual, supplying this = "on the fly" mapping to the transcriptome; this transcriptome GTF was used in genome build for C. neoformans
+	--readFilesIn ./combined1.fastq ./combined2.fastq					path to FASTQ files containing un-stranded paired-end reads; ./ specifies the current directory
+	--outFilterType BySJout						from the STAR manual: "reduces the number of "spurious" junctions"
+	--alignIntronMin 10						minimum intron length (used for TopHat2 yeast alignments)
+	--alignIntronMax 2000						maximum intron length (used for TopHat2 yeast alignments; validated by ARL: C. neoformans introns range from 25-150 bp in length?)
+	--outFileNamePrefix ./STAR_out/					specify a directory to place the STAR alignment output files in; can also give the output alignment file a specific name at this step
+	--outSAMstrandField intronMotif					from the STAR manual: "For unstranded RNA-seq data, Cufflinks/Cuffdiff require spliced alignments with XS strand attribute [...] will be generated for all alignments that contain splice junctions. The spliced alignments that have undefined strand (i.e. containing only non-canonical unannotated..."
+	--outFilterIntronMotifs RemoveNoncanonical					from the STAR manual: "it is recommended to remove the non-canonical junctions for Cufflinks runs using" this argument; non-canonical = sequence-based.
+
+Alignment output run through HTSeq Counts to simply count the number of reads mapping unambiguously to the reference transcriptome
+                         Normalized in R and used to validate Cufflinks output
+                         Done by CMK on laptop
+
+Alignment output run through CuffQuant to quantify transcript expression levels STRICTLY using the reference transcriptome
+                         Unlike HTSeq, this program will distribute multiple-mapped reads (with certain parameters) and count them
+
+CuffQuant output files (24 time-points) normalized together using CuffNorm
+
+CuffNorm output "genes.count_table" modified manually
+                         Sample numbers replaced with "time_points" in row 1
+                         Cufflinks "XLOC" IDs replaced with "CNAG_" gene standard names in column 1
+
+Final notes:
+Data are RNA-STAR aligned reads, Cufflinks transcript levels quantified
+Data are normalized together with the time-series (24)
+Gene expression levels are NOT "RPKM / FPKM" (i.e. normalized by gene length)
+Final list is based SPECIFICALLY on annotated transcripts in the C. neoformans genome
+No genes were pruned from this file for 0-low expression

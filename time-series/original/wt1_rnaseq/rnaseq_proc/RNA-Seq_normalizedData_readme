@@ -1,0 +1,79 @@
+Dates of analyses: 6/30/15 to 7/12/15
+Person carrying out experiment: Tina Kelliher
+Haase Lab Computer File for full README: /Users/haase-admin/Documents/yeast_rnaseq/15D_clb1-6PRep1_analysisbyCMK/RNA-Seq_AnalysisLog_STAR_upd071115
+
+*******************************************
+Analysis Pipeline
+*******************************************
+
+align()
+> for FILE in `ls`
+> do
+> cd $FILE
+> gzip -d *.gz
+> cat *.fastq > combined.fastq
+> mkdir STAR_out
+> STAR --runThreadN 1 --runMode alignReads --genomeDir /Users/haase-admin/S_cerevisiae_Ensembl_R64-1-1_Bowtie2/STAR_genomebuild/ --sjdbGTFfile /Users/haase-admin/S_cerevisiae_Ensembl_R64-1-1_Bowtie2/genes.gtf --readFilesIn ./combined.fastq --outFilterType BySJout --alignIntronMin 10 --alignIntronMax 2000 --outFileNamePrefix ./STAR_out/ --outSAMstrandField intronMotif --outFilterIntronMotifs RemoveNoncanonical
+> rm combined.fastq
+> gzip *.fastq
+> cd STAR_out
+> samtools view -h Aligned.out.sam > Aligned.out.bam
+> samtools sort Aligned.out.bam Aligned.out.sorted
+> samtools view -h Aligned.out.sorted.bam > Aligned.out.sorted.sam
+> htseq-count --order=pos --stranded=no --mode=intersection-nonempty Aligned.out.sorted.sam /Users/haase-admin/S_cerevisiae_Ensembl_R64-1-1_Bowtie2/genes.gtf > $FILE.txt
+> cuffquant /Users/haase-admin/S_cerevisiae_Ensembl_R64-1-1_Bowtie2/genes.gtf Aligned.out.sorted.sam
+> rm Aligned.out.sam
+> rm Aligned.out.bam
+> rm Aligned.out.sorted.sam
+> cd ..
+> cd ..
+> done
+
+{21 lines}
+
+*******************************************
+Normalization
+*******************************************
+
+cuffnorm /Users/haase-admin/S_cerevisiae_Ensembl_R64-1-1_Bowtie2/genes.gtf *.cxb
+
+*******************************************
+This file contains..
+*******************************************
+
+Raw reads aligned to the S. cerevisiae S288C genome using RNA-STAR
+                         S. cerevisiae S288C genome and transcriptome files downloaded from Illumina iGenomes on September 17, 2014 by CMK
+                                    
+Copy/pasted notes for STAR argument choices:
+	--runThreadN 1						default value
+	--runMode alignReads						default argument; specification for clarity to future users
+	--genomeDir				                                                  path to reference genome directory; built on 6/3/15
+	--sjdbGTFfile 	                                                                                                                             according to the STAR manual, supplying this = "on the fly" mapping to the transcriptome
+	--readFilesIn					                         path to FASTQ files containing un-stranded single-end reads; ./ specifies the current directory
+	--outFilterType BySJout						from the STAR manual: "reduces the number of "spurious" junctions"
+	--alignIntronMin 10						minimum intron length (used for yeast alignments)
+	--alignIntronMax 2000						maximum intron length (used for yeast alignments)
+	--outFileNamePrefix ./STAR_out/					specify a directory to place the STAR alignment output files in; can also give the output alignment file a specific name at this step
+	--outSAMstrandField intronMotif					from the STAR manual: "For unstranded RNA-seq data, Cufflinks/Cuffdiff require spliced alignments with XS strand attribute [...] will be generated for all alignments that contain splice junctions. The spliced alignments that have undefined strand (i.e. containing only non-canonical unannotated..."
+	--outFilterIntronMotifs RemoveNoncanonical					from the STAR manual: "it is recommended to remove the non-canonical junctions for Cufflinks runs using" this argument; non-canonical = sequence-based.
+
+Alignment output run through HTSeq Counts to simply count the number of reads mapping unambiguously to the reference transcriptome
+                         Normalized in R and used to validate Cufflinks output
+                         Done by CMK on laptop
+
+Alignment output run through CuffQuant to quantify transcript expression levels STRICTLY using the reference transcriptome
+                         Unlike HTSeq, this program will distribute multiple-mapped reads (with certain parameters) and count them
+
+CuffQuant output files (3 time-series experiments, 108 samples) normalized together using CuffNorm
+
+CuffNorm output "genes.count_table" modified manually
+                         Sample numbers replaced with "time_points" in row 1
+                         "life_points" added in row 2 (see each Experimental Readme)
+                         Cufflinks "XLOC" IDs replaced with gene common names in column 1
+
+Final notes:
+Data are RNA-STAR aligned reads, Cufflinks transcript levels quantified
+Data are normalized together (108 samples total)
+Gene expression levels are NOT "RPKM / FPKM" (i.e. normalized by gene length)
+Final list is based SPECIFICALLY on annotated transcripts in the S. cerevisiae genome
+No genes were pruned from these files for 0-low expression
