@@ -1,0 +1,15 @@
+periods = [60, 70, 80], []
+dlxjtk_cutoff = 20
+num_reg = 1000000
+num_per = 1
+data_file = /mnt/c/users/sophi/OneDrive/WIP/crypto/data/crypto_rnaseq_norm_trim.tsv,
+output_dir = /mnt/c/users/sophi/OneDrive/WIP/crypto/results/node_finding_20220308090355
+annotation_file = tests/synnet6/synnet6_annot.tsv
+dl_output_file = /mnt/c/users/sophi/OneDrive/WIP/crypto/results/node_finding_20220308090355/pydl_results.tsv
+jtk_output_file = /mnt/c/users/sophi/OneDrive/WIP/crypto/results/node_finding_20220308090355/pyjtk_results.tsv
+dlxjtk_output_file = /mnt/c/users/sophi/OneDrive/WIP/crypto/results/node_finding_20220308090355/dlxjtk_results.tsv
+gene_list_file = /mnt/c/users/sophi/OneDrive/WIP/crypto/results/node_finding_20220308090355/gene_list.tsv
+verbose = True
+num_proc = 6
+log_trans = True
+pval_combine_method = max

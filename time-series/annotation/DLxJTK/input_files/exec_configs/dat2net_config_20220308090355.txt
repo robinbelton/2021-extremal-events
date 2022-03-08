@@ -1,0 +1,12 @@
+data_file = /mnt/c/users/sophi/OneDrive/WIP/crypto/data/crypto_rnaseq_norm_trim.tsv,
+annotation_file = tests/synnet6/synnet6_annot.tsv
+output_dir = /mnt/c/users/sophi/OneDrive/WIP/crypto/results
+num_proc = 6
+verbose = True
+IDVconnection = True
+
+[dlxjtk_arguments]
+periods = 60, 70, 80
+dlxjtk_cutoff = 20
+num_reg = 1000000
+num_per = 1
