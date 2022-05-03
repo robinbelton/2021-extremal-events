@@ -1,0 +1,154 @@
+\ProvidesPackage{goodstyle}
+
+% ... to make TODO items easy to see
+\usepackage{color}
+\definecolor{darkorchid}{rgb}{0.6,0.196,0.8}
+\definecolor{olivedrab}{rgb}{0.294,0.325,0.125}
+\definecolor{rawsienna}{rgb}{0.839,0.541,0.349}
+\newcommand{\todo}[1]{{\color{red}[[\textbf{XXX TODO: }#1]]}}
+\newcommand{\brittany}[1]{{\color{rawsienna}[[\textbf{Brittany says: }#1]]}}
+\newcommand{\robin}[1]{{\color{darkorchid}[[\textbf{Robin: }#1]]}}
+\newcommand{\Bree}[1]{{\color{blue}[[\textbf{Bree: }#1]]}}
+\newcommand{\Tomas}[1]{{\color{magenta}[[\textbf{Tomas: }#1]]}}
+
+%-------Packages---------
+\usepackage{amssymb,amsmath,amsfonts}
+\usepackage[all,arc,cmtip]{xy}
+\usepackage{tikz}
+\usepackage{enumerate}
+\usepackage{mathrsfs}
+%\usepackage{subfigure}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{hyperref}
+
+%... for figures:
+\usepackage{graphicx}
+\graphicspath{{./}{images/}}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% ... for algorithms:
+\newcommand{\require}{\Statex \textbf{Input: }}
+\newcommand{\ensure}{\Statex \textbf{Output: }}
+
+%\usepackage{microtype}%if unwanted, comment out or use option "draft"
+\usepackage[margin=1in]{geometry}
+
+%--------Theorem Environments--------
+%theoremstyle{plain} --- default
+\newtheorem{thm}{Theorem}[section]
+ \newtheorem{cor}[thm]{Corollary}
+ \newtheorem{prop}[thm]{Proposition}
+ \newtheorem{lem}[thm]{Lemma}
+ \newtheorem{conj}[thm]{Conjecture}
+ \newtheorem{quest}[thm]{Question}
+%
+ \theoremstyle{definition}
+ \newtheorem{defn}[thm]{Definition}
+ \newtheorem{defns}[thm]{Definitions}
+ \newtheorem{con}[thm]{Construction}
+ \newtheorem{example}[thm]{Example}
+ \newtheorem{exmps}[thm]{Examples}
+ \newtheorem{notn}[thm]{Notation}
+ \newtheorem{notns}[thm]{Notations}
+ \newtheorem{addm}[thm]{Addendum}
+ \newtheorem{exer}[thm]{Exercise}
+%
+ \theoremstyle{remark}
+ \newtheorem{rem}[thm]{Remark}
+ \newtheorem{assumps}[thm]{Assumptions}
+ \newtheorem{rems}[thm]{Remarks}
+ \newtheorem{warn}[thm]{Warning}
+ \newtheorem{sch}[thm]{Scholium}
+\newtheorem*{theorem*}{$\mathbf{Theorem}$}
+
+
+%--------For Referencing--------
+\newcommand{\appendref}[1]{Section~\ref{append:#1}}
+\newcommand{\assumpsref}[1]{Assumptions~\ref{assumps:#1}}
+\newcommand{\figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\lemref}[1]{Lemma~\ref{lem:#1}}
+\newcommand{\conref}[1]{Construction~\ref{con:#1}}
+\newcommand{\exref}[1]{Example~\ref{ex:#1}}
+\newcommand{\eqnref}[1]{Equation~\eqref{eqn:#1}}
+\newcommand{\secref}[1]{Section~\ref{sec:#1}}
+\newcommand{\appref}[1]{Appendix~\ref{app:#1}}
+\newcommand{\thmref}[1]{Theorem~\ref{thm:#1}}
+\newcommand{\corref}[1]{Corollary~\ref{cor:#1}}
+\newcommand{\propref}[1]{Proposition~\ref{prop:#1}}
+\newcommand{\defref}[1]{Definition~\ref{def:#1}}
+\newcommand{\lineref}[1]{Line~\ref{line:#1}}
+\renewcommand{\algref}[1]{Algorithm~\ref{alg:#1}}
+\newcommand{\stmtref}[1]{Statement~(\ref{stmt:#1})} % used within proofs
+\newcommand{\defstmtref}[2]{\stmtref{#1-#2} of \defref{#1}}
+\newcommand{\lemstmtref}[2]{\stmtref{#1-#2} of \lemref{#1}}
+\newcommand{\propertyref}[1]{Property~(\ref{property:#1})}
+
+%---- Math Operators ---
+\DeclareMathOperator{\length}{\textsf{len}}
+\DeclareMathOperator{\im}{im}
+
+%------------Macros---------------
+\newcommand{\orgemph}[1]{\textit{#1}} % for organizing proofs, etc.
+\newcommand{\pers}{\text{pers}}
+\newcommand{\avg}{\text{avg}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\weightedDG}{\text{WeightedDG}}
+\newcommand{\connectedheight}{\text{levelheight}}
+\newcommand{\extrema}{\textsc{extrema}}
+\newcommand{\mergetime}{O(n^2\log n)}
+\newcommand{\intervaltime}{O(n\log n)}
+\newcommand{\di}[1]{\overrightarrow{#1}}
+\newcommand{\vecj}{\mathbf{j}}
+\newcommand{\vecv}{\mathbf{v}}
+\newcommand{\vecw}{\mathbf{w}}
+\newcommand{\vecsw}{\mathbf{w}}
+\newcommand{\vecsv}{\mathbf{v}}
+\newcommand{\Z}{\mbox{$\mathbb Z$}}
+\newcommand{\C}{\mbox{$\mathbb C$}}
+\newcommand{\Q}{\mbox{$\mathbb Q$}}
+\newcommand{\N}{\mbox{$\mathbb N$}}
+\newcommand{\collapse}{{\{\int(\gamma)\subseteq K\mid \tau\subseteq \gamma\subseteq \sigma\}}}
+\newcommand{\collapsemin}{{\{\int(\gamma)\subseteq K\mid \min(\tau)\subseteq \gamma\subseteq \sigma\}\cup\{\min(\tau)\}}}
+\newcommand{\zero}{{\mathbf{0}}}
+\renewcommand{\int}{{\text{int}}}
+\newcommand{\Khat}{{\hat{K}}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\xtok}[1]{\x[1:#1]}
+\newcommand{\ytok}[1]{\y[1:#1]}
+\newcommand{\alphtok}[1]{\alpha[1:#1]}
+\newcommand{\y}{\textbf{y}}
+\newcommand{\z}{\textbf{z}}
+\newcommand{\p}{\textbf{p}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\Xcap}{X_{12}}
+\renewcommand{\a}{\textbf{a}}
+\newcommand{\sgn}{\text{sgn}}
+\newcommand{\mat}{\textbf{mat}}
+\newcommand{\cost}{\textbf{cost}}
+\newcommand{\diff}{\textbf{diff}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\DAG}{\text{DAG}}
+\renewcommand{\d}{d}
+\renewcommand{\le}{\textsf{left}}
+\newcommand{\re}{\textsf{right}}
+\newcommand{\A}{A}
+\newcommand{\Ax}{A_{\x}}
+\newcommand{\Az}{A_{\z}}
+\newcommand{\st}{\text{ s.t. }}
+\newcommand{\Xzero}{X_{(y,\zero)}}
+\newcommand{\Zzero}{Z_{(\zero, y)}}
+\renewcommand{\tilde}{\widetilde}
+\newcommand{\size}[1]{\left|#1\right|} % was: {\sharp(#1)}
+
+% make equations follow the section counter
+% \makeatletter
+% \let\c@equation\c@thm
+% \makeatother
+% \numberwithin{equation}{section}
+
+
+

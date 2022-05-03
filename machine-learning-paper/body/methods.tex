@@ -1,0 +1,237 @@
+\section{Methods}
+
+In this section, we give an overview of the methods we use in our analysis, namely, the backbones and the backbone distance and the parameters we use in applying spectral clustering.
+
+\subsection{Backbone Distance}
+
+From~\figref{extremalDAGsine}, one can see that each time series is translated
+into an ordered linear sequence of alternating minima and maxima. These linear
+sequences greatly simplify the comparison between datasets assuming that 
+there is a one-to-one correspondence between the identifications of each of the time series
+in each dataset. For example, consider two
+gene expression datasets under different experimental conditions. In this case,
+each time series has a unique identity corresponding to the gene that it
+represents. Our primary task in this section is to perform a matching operation
+between the extrema of two time series with matching identities. To perform the
+matching, we use a modified version of the DNA alignment algorithm from
+\cite{NeedlemanA70}. Before we get to this, we take a detour to sublevel set persistence 
+in order to define the node weights.
+
+\subsubsection{Vertices and Node Weights}
+
+Throughout this section, we refer to
+\figref{time-series-and-dags} for illustrations of definitions.
+
+\begin{figure}[htp]
+     \centering
+     \begin{subfigure}[b]{0.4\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{time-series-1.png}
+         \caption{Dataset 1}
+         \label{fig:timeseries1}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.4\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{time-series-2.png}
+         \caption{Dataset 2}
+         \label{fig:timeseries2}
+     \end{subfigure} 
+
+        \caption{Time Series Data and Corresponding Extremal Event DAGs. We consider two datasets consisting of two functions, $\frac{1}{2}\sin(x)$ and
+        $\frac{1}{2}\cos(x)$ over $[0, 2\pi]$ with some added noise. In
+        \figref{timeseries1} and \figref{timeseries2}, we label the blue curve
+        as ``sine" and green curve as ``cosine". }        
+        \label{fig:time-series-and-dags}
+\end{figure}
+
+\begin{defn}[Backbones] A \emph{backbone} is a finite sequence $\x = (x_1, x_2,
+    \dots , x_n)$, where each $x_i$ is a tuple~$x_i=(s_i, w_i)$ with $s_i$ a string, and $w_i \in
+    \R_{\geq 0}$. The empty string is denoted by 0.
+    The \emph{length} of $\x$ is denoted $\length(\x)$, and is equal to the
+    number of elements in the sequence (here, $\length(\x)=n$).
+    We call each $x_i$ a
+    \emph{node} and we denote the first $k$ terms of $\x$ by~$\xtok{k}.$
+\label{def:backbone}
+\end{defn}
+
+\begin{rem}[Constructing Backbones from Nicely Tame Functions]
+    In what follows, we construct a backbone from a nicely tame
+    function $f \colon C \to \R$ by computing $\DAG(\{
+        f\})=(V,E,\omega_V,\omega_E)$ and removing all
+    edges and edge weights; the nodes are ordered
+    by their corresponding domain coordinates. Then, the data associated to each
+    node $v \in V$ is a string representing which type of local maxima (min or
+    max) along with the node weight $\omega_V(v)$.  This backbone for
+    $f$ is denoted $B(f)$.
+    See~\figref{backbones} for an example.
+\end{rem}
+
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{backbone1}
+        \caption{Sine Backbone 1}
+        \label{fig:backbone1}
+    \end{subfigure} \\
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{backbone2}
+        \caption{Sine Backbone 2}
+        \label{fig:backbone2}
+    \end{subfigure}
+    \caption{Extracting Backbones from the two datasets.
+        \figref{backbone1} illustrates the backbone where each node corresponds
+        to local extrema of the sine labeled curve from Dataset 1 (see
+        \figref{timeseries1}). Mathematically, this backbone is the sequence
+        $(\min, 0.25)$, $(\max, 0.5)$, $(\min, 0.5)$, $(\max, 0.016)$, $(\min, 0.016)$,
+        $(\max, 0.25)$.  \figref{backbone2} illustrates the backbone where each
+        node corresponds to local extrema of the sine labeled curve from Dataset 2
+         (see \figref{timeseries2}). Mathematically, this backbone is
+        the sequence $(\min, 0.25)$, $(\max, 0.042)$, $(\min, 0.042)$, $(\max, 0.5)$,
+        $(\min, 0.5)$, $(\max, 0.25)$. }
+        \label{fig:backbones}
+\end{figure}
+
+Next we discuss alignments and how to compute a distance between two backbones using an optimal alignment.
+
+\begin{defn}[Alignment]\label{def:alignment}
+    %
+    Let $\x = (x_1,x_2,\dots, x_m)$ and $\y = (y_1,y_2,\dots, y_n)$ be
+    backbones.
+    %
+    Let $[k]$ denote the first $k$ natural numbers; that is,~$[k]:=\{ 1, 2, \dots, k\} \subset \N$.
+    %
+    An \emph{alignment} is a totally ordered correspondence between $\tilde{\x}$ and
+    $\tilde{\y}$ that does not repeat elements of~$\x$ or $\y$ and respects the
+    labels (or strings) of the backbones. We say that the
+    number of pairs in the correspondence is the \emph{length} of the alignment.
+    In particular, we represent an alignment of length $k$ between $\x$ and
+    $\y$ as a  function $\alpha: [k] \to \tilde{\x} \times \tilde{\y}$,
+    where $\alpha(i)$ can be written as two coordinate
+    functions~$\alpha(i):= (\alpha_{\x}(i), \alpha_{\y}(i))$, such that
+    %
+    \begin{enumerate}
+        \item \textbf{No Null Alignments.} The pair $(\zero,\zero)$ is not in the image of
+            $\alpha$, which we denote by $\im(\alpha)$. \label{property:nullalignments}
+        \item \textbf{Preserves Order of Backbones.} The coordinate functions $\alpha_\x: [k] \to \tilde{\x}$, $\alpha_\y:
+            [k]\rightarrow \tilde{\y}$ are \emph{partially monotone}. The
+            function $\alpha_\x$ is partially monotone if and only if for every
+            $i,j \in [k]$ such that~$\alpha_\x(i)\neq \zero$ and $\alpha_\x(j) \neq
+            \zero$, we have
+            %
+            $$
+                \iota_\x(\alpha_\x(i)) < \iota_\x(\alpha_\x(j))
+                \text{ if and only if } i < j.
+            $$
+            %
+            An analogous definition applies to $\alpha_\y$. \label{property:preservesbackbones}
+        \item \textbf{No Misalignments.}
+            For each $\left((s_x,w_x),(s_y,w_y)\right) \in \im(\alpha)$,
+            we either have equality in strings \mbox{$s_x = s_y$}, or one of $(s_x, w_x)$, $(s_y, w_y)$ is equal to $\zero$.  
+            \label{property:nomisalignments}
+
+        \item \textbf{Restriction to Matching.} Each element of $\x$ and $\y$ appears in the image of $\alpha_{\x}$ and $\alpha_{\y}$ exactly once. That is, for each $x_i \in \x$, there exists exactly one $j \in [k]$ for which $\alpha_{\x}(j)=x_i$. The analogous statement holds for each $y_i \in \y$. \label{property:restrictiontomatching}
+    \end{enumerate}
+    %
+    If $\alpha(i)=(\alpha_{\x}(i), \zero)$, we say that $\alpha_{\x}(i)$ is aligned
+    with an \emph{insertion}; similarly for $\alpha(i)=(\zero,\alpha_{\y}(i))$. We
+    denote the restriction of $\alpha$ to the first $h$ integers, $[h] =\{1, 2,
+    \dots, h\} \subset [k]$ as $\alphtok{h}$.
+    %
+\end{defn}
+
+ Notice that the insertions occur at the small noisy extrema in
+each of the time series.
+
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{alignment1}
+        \caption{Alignment 1}
+        \label{fig:alignment1}
+    \end{subfigure} \\
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{alignment2}
+        \caption{Alignment 2}
+        \label{fig:alignment2}
+    \end{subfigure}
+    %
+    \caption{Two Possible Alignments of Sine Backbones. We consider the
+        backbones shown in \figref{backbones}. Call these $\x$ and $\y$
+        respectively. \figref{alignment1} gives an alignment, $\alpha_1: \{1, 2,
+        \dots, 6\} \rightarrow \tilde{\x} \times \tilde{\y}$ of the two
+        backbones where $\alpha_1(i) = (x_i, y_i)$. \figref{alignment2} gives an
+        alignment $\alpha_2: \{1, 2, \dots, 8\}\rightarrow \tilde{\x} \times
+        \tilde{\y}$ where $\alpha_2(1) = (x_1, y_1),$ $\alpha_2(2) = (\zero, y_2),$
+        $\alpha_2(3) = (\zero, y_3),$ $\alpha_2(4) = (x_2, y_4),$
+        $\alpha_2(5)=(x_3, y_5),$  $\alpha_2(6) = (x_4, \zero),$ $\alpha_2(7) =
+        (x_5, \zero),$ and $\alpha_2(8) = (x_6, y_6)$.} \label{fig:alignments}
+\end{figure}
+
+\begin{defn}[Cost of Alignment]\label{def:cost}
+    Let $\x$ and $\y$ be backbones and $\alpha:[k] \rightarrow \tilde{\x} \times \tilde{\y}$ be an
+    alignment of length $k$. The \textit{cost} of $\alpha$ is defined as
+    $$
+        \cost(\alpha) := \sum_{(x,y) \in \im(\alpha)}
+        |w_x-w_y|,
+    $$
+    where $x=(s_x,w_x)$ and $y=(s_y,w_y)$.
+    We define the cost of the partial alignment $c_{\x, \y}(i,j)$ to be the minimum cost of aligning $\xtok{i}$
+    with $\ytok{j}$, that is,
+    $$
+        c_{\x, \y}(i, j)
+        :=
+        \min\{ \cost(\alpha) \mid \alpha \text{ is an alignment of } \xtok{i} \text{ and } \ytok{j} \}.
+    $$
+\end{defn}
+
+Referring again to~\figref{alignments}, we compute that the alignment
+in~\figref{alignment2} has a lower cost, 0.116, than that
+in~\figref{alignment1}, 0.932.
+
+\begin{defn}[Optimal Alignment]
+    %
+    Let $\x=(x_1, x_2, \dots, x_m)$ and $\y=(y_1, y_2, \dots, y_n)$ be
+    backbones. We call an alignment $\alpha:[k] \rightarrow \tilde{\x} \times
+    \tilde{\y}$ \emph{optimal} if $\cost(\alpha)=c_{\x, \y}(m,n)$.
+    %
+    \label{def:optimal-cost}
+\end{defn}
+
+An optimal alignment minimizes cost. We note that there could be multiple
+alignments that minimize cost and so an optimal alignment is not necessarily
+unique. 
+
+We define the distance between two backbones~$\x$ and~$\y$ using an
+optimal alignment. To do this, we need to identify nontrivial matches, i.e.,
+those alignment pairs that do not involve insertions.
+
+\begin{defn}[Backbone Distance]\label{def:backbone-dist}
+    %
+    The \emph{backbone distance} between backbones $\x$ and $\y$ is defined
+    as
+    \begin{equation}\label{backbone-dist}
+    d_{\B}(\x, \y) = \inf_{\alpha}
+        \left (\sum_{(x,y) \in \im(\alpha)} |w_x - w_y|
+        + \sum_{(x,\zero) \in \im(\alpha)} w_x
+        + \sum_{(\zero,y) \in \im(\alpha)} w_y \right )
+    \end{equation}
+    where $\alpha$ ranges over all alignments between $\x$ and $\y$.
+\end{defn}
+
+The backbone distance finds the best alignment between $\x$ and $\y$, then
+defines  the distance to be the $L_1$-norm between a vector consisting of the
+node weights in $\tilde{\x}$ and a vector consisting of the matching node weights
+in $\tilde{\y}$. The first term of Equation \ref{backbone-dist} accounts for the
+cost of the nodes in $\x$ that are aligned with nodes in $\y$, the second term
+accounts for the cost of the nodes in $\x$ that are aligned with an insertion,
+and the third term accounts for the cost of the nodes in $\y$ that are aligned
+with an insertion. \todo{cite} shows that the backbone distance is a metric and is stable 
+meaning that small perturbations in the functions results in small changes in the backbone distance. 
+
+\subsection{Spectral Clustering}
+\todo{}
