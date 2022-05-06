@@ -1,26 +1,14 @@
 \section{Methods}
 
-In this section, we give an overview of the methods we use in our analysis, namely, the backbones and the backbone distance and the parameters we use in applying spectral clustering.
+In this section, we give an overview of the methods we use in our analysis, namely, the backbones and the backbone distance, and the parameters we use in applying spectral clustering. We note that even though node lives in \defref{nodelife} were defined from continuous functions, we can easily apply the computation to discrete data. See \cite{BeltonExtremal22} for more details.
 
 \subsection{Backbone Distance}
 
-From~\figref{extremalDAGsine}, one can see that each time series is translated
+From~\figref{time-series-and-dags} and \figref{backbones}, one can see that each time series can be translated
 into an ordered linear sequence of alternating minima and maxima. These linear
-sequences greatly simplify the comparison between datasets assuming that 
-there is a one-to-one correspondence between the identifications of each of the time series
-in each dataset. For example, consider two
-gene expression datasets under different experimental conditions. In this case,
-each time series has a unique identity corresponding to the gene that it
-represents. Our primary task in this section is to perform a matching operation
-between the extrema of two time series with matching identities. To perform the
-matching, we use a modified version of the DNA alignment algorithm from
-\cite{NeedlemanA70}. Before we get to this, we take a detour to sublevel set persistence 
-in order to define the node weights.
-
-\subsubsection{Vertices and Node Weights}
-
-Throughout this section, we refer to
-\figref{time-series-and-dags} for illustrations of definitions.
+sequences greatly simplify the comparison between datasets. Our primary task in this section is to perform a matching operation
+between the extrema of two time series. To perform the
+matching, we use a modified version of the edit distance. 
 
 \begin{figure}[htp]
      \centering
@@ -38,10 +26,10 @@ Throughout this section, we refer to
          \label{fig:timeseries2}
      \end{subfigure} 
 
-        \caption{Time Series Data and Corresponding Extremal Event DAGs. We consider two datasets consisting of two functions, $\frac{1}{2}\sin(x)$ and
+        \caption{Time Series Data. We consider two datasets consisting of two functions, $\frac{1}{2}\sin(x)$ and
         $\frac{1}{2}\cos(x)$ over $[0, 2\pi]$ with some added noise. In
         \figref{timeseries1} and \figref{timeseries2}, we label the blue curve
-        as ``sine" and green curve as ``cosine". }        
+        as ``sine-ish" and green curve as ``cosine-ish". }        
         \label{fig:time-series-and-dags}
 \end{figure}
 
@@ -56,13 +44,9 @@ Throughout this section, we refer to
 \end{defn}
 
 \begin{rem}[Constructing Backbones from Nicely Tame Functions]
-    In what follows, we construct a backbone from a nicely tame
-    function $f \colon C \to \R$ by computing $\DAG(\{
-        f\})=(V,E,\omega_V,\omega_E)$ and removing all
-    edges and edge weights; the nodes are ordered
-    by their corresponding domain coordinates. Then, the data associated to each
-    node $v \in V$ is a string representing which type of local maxima (min or
-    max) along with the node weight $\omega_V(v)$.  This backbone for
+    We construct a backbone from a nicely tame
+    function $f \colon C \to \R$ by having a tuple for each local extrema ordered by
+    domain coordinate, and weighting each of these by the node life.  This backbone for
     $f$ is denoted $B(f)$.
     See~\figref{backbones} for an example.
 \end{rem}
@@ -136,10 +120,7 @@ Next we discuss alignments and how to compute a distance between two backbones u
     \end{enumerate}
     %
     If $\alpha(i)=(\alpha_{\x}(i), \zero)$, we say that $\alpha_{\x}(i)$ is aligned
-    with an \emph{insertion}; similarly for $\alpha(i)=(\zero,\alpha_{\y}(i))$. We
-    denote the restriction of $\alpha$ to the first $h$ integers, $[h] =\{1, 2,
-    \dots, h\} \subset [k]$ as $\alphtok{h}$.
-    %
+    with an \emph{insertion}; similarly for $\alpha(i)=(\zero,\alpha_{\y}(i))$.    %
 \end{defn}
 
  Notice that the insertions occur at the small noisy extrema in
@@ -180,58 +161,47 @@ each of the time series.
         |w_x-w_y|,
     $$
     where $x=(s_x,w_x)$ and $y=(s_y,w_y)$.
-    We define the cost of the partial alignment $c_{\x, \y}(i,j)$ to be the minimum cost of aligning $\xtok{i}$
-    with $\ytok{j}$, that is,
-    $$
-        c_{\x, \y}(i, j)
-        :=
-        \min\{ \cost(\alpha) \mid \alpha \text{ is an alignment of } \xtok{i} \text{ and } \ytok{j} \}.
-    $$
-\end{defn}
+  \end{defn}
 
 Referring again to~\figref{alignments}, we compute that the alignment
 in~\figref{alignment2} has a lower cost, 0.116, than that
 in~\figref{alignment1}, 0.932.
 
-\begin{defn}[Optimal Alignment]
-    %
-    Let $\x=(x_1, x_2, \dots, x_m)$ and $\y=(y_1, y_2, \dots, y_n)$ be
-    backbones. We call an alignment $\alpha:[k] \rightarrow \tilde{\x} \times
-    \tilde{\y}$ \emph{optimal} if $\cost(\alpha)=c_{\x, \y}(m,n)$.
-    %
-    \label{def:optimal-cost}
-\end{defn}
-
-An optimal alignment minimizes cost. We note that there could be multiple
-alignments that minimize cost and so an optimal alignment is not necessarily
-unique. 
-
 We define the distance between two backbones~$\x$ and~$\y$ using an
-optimal alignment. To do this, we need to identify nontrivial matches, i.e.,
-those alignment pairs that do not involve insertions.
+optimal alignment. 
 
 \begin{defn}[Backbone Distance]\label{def:backbone-dist}
     %
     The \emph{backbone distance} between backbones $\x$ and $\y$ is defined
     as
-    \begin{equation}\label{backbone-dist}
-    d_{\B}(\x, \y) = \inf_{\alpha}
-        \left (\sum_{(x,y) \in \im(\alpha)} |w_x - w_y|
-        + \sum_{(x,\zero) \in \im(\alpha)} w_x
-        + \sum_{(\zero,y) \in \im(\alpha)} w_y \right )
+    \begin{equation}%\label{backbone-dist}
+    d_{\B}(\x, \y) = \inf_{\alpha}\cost(\alpha)
     \end{equation}
     where $\alpha$ ranges over all alignments between $\x$ and $\y$.
 \end{defn}
 
 The backbone distance finds the best alignment between $\x$ and $\y$, then
-defines  the distance to be the $L_1$-norm between a vector consisting of the
+defines the distance to be the $L_1$-norm between a vector consisting of the
 node weights in $\tilde{\x}$ and a vector consisting of the matching node weights
-in $\tilde{\y}$. The first term of Equation \ref{backbone-dist} accounts for the
-cost of the nodes in $\x$ that are aligned with nodes in $\y$, the second term
-accounts for the cost of the nodes in $\x$ that are aligned with an insertion,
-and the third term accounts for the cost of the nodes in $\y$ that are aligned
-with an insertion. \todo{cite} shows that the backbone distance is a metric and is stable 
-meaning that small perturbations in the functions results in small changes in the backbone distance. 
+in $\tilde{\y}$. The backbone distance is shown to be a metric and stable in \cite{BeltonExtremal22} 
+where stable means that small perturbations in the functions results in small changes in the backbone distance. 
 
 \subsection{Spectral Clustering}
-\todo{}
+Spectral clustering is a common clustering technique on graphs that constructs clusters based on parts of the graph that are highly connected. 
+See \cite{LuxburgA07} for a good overview on spectral clustering. We use the backbone distance for spectral clustering due to its properties of preserving order of local extrema, robustness to noise, and how it captures shapes of curves. Like many clustering techniques, spectral clustering involves choosing parameters. We describe how we choose those parameters here. 
+
+\begin{itemize}
+\item Similarity Matrix: To convert the backbone distance matrix to a similarity matrix, we apply the Gaussian similarity function: $s(x_i, x_j) = \text{exp}(-d_\mathcal{B}(x_i, x_j)^2/(2\sigma^2))$ where the parameter $\sigma$ controls the width of the neighborhoods. Since we are working with 10 nearest neighbors, we choose $\sigma = 0.6$ which is the average distance between a time series and its tenth nearest neighbor. 
+
+\item Similarity Graph: We construct a similarity graph by constructing a nearest neighbors graph. We picked the number of nearest neighbors to be 10 because we want our graph to have one connected component and not super close to a complete graph. Through inspection, 10 seemed to be a good value to accomplish this. We weight the $k$-nearest neighbor graph using the similarity value computed from the Gaussian similarity of the backbone distance. Furthermore we made the similarity matrix of the similarity graph symmetric by making sure that if we have a nonzero entry at $(i,j)$, then entry $(j,i)$ had the same nonzero value.
+
+\item Number of Clusters: We computed the graph Laplacian of the similarity matrix and then plotted the eigenvalues (see \figref{eigenvalues}) to decide the number of clusters. The plot did not give us a clear idea on the number of clusters so we made a somewhat arbitrary decision of 24. We picked 24 since it is a little larger than the number of S. Cerevisiae genes we are studying. 
+\end{itemize}
+
+\begin{figure}[htp]
+    \centering
+    {\includegraphics[width=.5\textwidth]{images/eigenvalues.png}} \\
+    \caption{Eigenvalues in ascending order of the graph Laplacian. We see there is not a clear indicator on the number of clusters.}
+    \label{fig:eigenvalues}
+\end{figure}
+

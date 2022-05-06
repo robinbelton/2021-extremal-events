@@ -2,11 +2,8 @@
 
 We begin by summarizing the necessary background information. We refer the reader
 to~\cite{HatcherAlgebraic02, EdelsbrunnerComputational10} for additional background in algebraic
-topology,  and computational topology respectively.
-
-Given a topological space, $X$ and an integer $k \in \Z$, we denote the
-\emph{$k^{th}$ homology group} as $H_k(X)$. We assume $\Z/2\Z$
-coefficients for this paper.
+topology,  and computational topology respectively. Given a topological space, $X$ and an integer $k \in \Z$, we denote the
+\emph{$k^{th}$ homology group} as $H_k(X)$. We assume $\Z/2\Z$ coefficients for this paper.
 
 \begin{defn}[Homological Critical Values]
     Let $X$ be a topological space, $f:X \rightarrow \R$ a function. We
@@ -17,7 +14,8 @@ coefficients for this paper.
 \end{defn}
 
 In other words, the homological critical values are the values at which the
-homology of the sublevel sets change. For Morse functions over $\R$, these points are exactly the heights of the local extrema of $f$ \cite{MilnorMorse63}.
+homology of the sublevel sets change. For Morse functions over $\R$, these points are 
+exactly the heights of the local extrema of $f$ \cite{MilnorMorse63}.
 
 \begin{defn}[Tameness]
     Let $X$ be a topological space. A function $f: X \rightarrow
@@ -42,9 +40,9 @@ connectedness) is the only nontrivial group.
 Persistent homology tracks how homological  features evolve in a nested sequence
 of topological subspaces.  We work with a specific case of persistent homology that
 encodes the changes of the connectedness of sublevel sets of a function~$f: X
-\rightarrow \R$ as the height (domain) parameter ranges from~$-\infty$ to~$\infty$. This
+\rightarrow \R$ as the height parameter ranges from~$-\infty$ to~$\infty$. This
 information is encoded in a persistence diagram and encodes the prominence of
-the local extrema of $f$. Persistent homology is a general mathematical framwork
+the local extrema of $f$. Persistent homology is a general mathematical framework
 and we only provide the definitions necessary for our results here;
 see \cite{EdelsbrunnerComputational10,PereaA19} for more detailed
 introductions to persistence.
@@ -102,8 +100,7 @@ death coordinate is $\infty$.
 We call the unique point in $D(f)$ with a death coordinate of $\infty$
 the \emph{essential connected component}. From the key observation it follows that  if
 $t$ does not represent the essential component, then there exists a local
-maximum $(t', f(t'))$
-such that $(f(t),f(t')) \in D(f)$.
+maximum $(t', f(t'))$ such that $(f(t),f(t')) \in D(f)$.
 In this case, $f(t')$ is the height at which the connected
 component of~$f^{-1}(-\infty, f(t')]$ containing $t$ merges with another
 connected component of the sublevel set $f^{-1}(-\infty, f(t')]$ represented by
@@ -137,7 +134,6 @@ We use the persistence diagram $D(f)$ to assist us with understanding when this
 occurs.
 
 \begin{defn}[Birth-Death Pairing Map]
-   % \brittany{I added this def. back in b/c I didn't have time to remove all of  tis references}
     Let $C \subset \R$ and $f:C\rightarrow \R$ be a nicely tame function.
     Let~$\{t_i\}_{i=1}^n$ be the
     set of domain coordinates of the local minima of $f$. Define the
@@ -175,11 +171,6 @@ See~\figref{nodelife} for an example of computing the persistence of local extre
 \begin{defn}[Node Life]\label{def:nodelife}
     Let $f:C \rightarrow \R$ be a nicely tame function with a local extremum at domain coordinate $t$. The \emph{node life} of $t$ is $\pers_f(t)/2$.
 \end{defn}
-
-We sometimes omit the subscript $f$ from $\pers_f(t)$ when the function we are
-computing the node life from is clear.
-Proposition 2 and Corollary 1 from~\cite{BerryUsing20} states that $\varphi_\varepsilon^f(t)$ is
-the smallest interval for which any nicely tame $\varepsilon$-perturbation of $f$ is guaranteed to have at least one local extremum of the same type as $t$, as long as $\varepsilon$ is less than the node life.
 
 \begin{figure}[htp]
     \centering

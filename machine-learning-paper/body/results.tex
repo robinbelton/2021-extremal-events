@@ -1,0 +1,53 @@
+\section{Results}
+We give the results for (1) finding which genes in C. neoformans minimize the backbone distance between genes in S. Cerevisiae and (2) applying spectral clustering to the 18 S. Cerevisiae genes and periodic C. Neoformans genes. 
+
+\subsection{Genes that Minimize the Backbone Distance}
+After computing all pairwise backbone distances between S. Cerevisiae genes and C. Neoformans genes, we find the following S. Cerevisiae genes match best with the following C. Neoformans genes and plot the results in \figref{backbone-orthologs}. We call these pairs, \emph{backbone expression orthologs}.
+
+\begin{table}[htp]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+S. Cerevisiae Gene & C. Neoformans Gene \\ \hline
+SWI4 & CNAG\_06818 \\ \hline
+HCM1 & CNAG\_06818 \\ \hline
+TOS4 & CNAG\_03212 \\ \hline
+NDD1 & CNAG\_02322 \\ \hline
+FKH1 & CNAG\_02723 \\ \hline
+PLM2 & CNAG\_07756 \\ \hline
+SWI5 & CNAG\_02723 \\ \hline
+ACE2 & CNAG\_06818 \\ \hline
+YOX1 & CNAG\_07756 \\ \hline
+YHP1 & CNAG\_07940 \\ \hline
+NRM1 & CNAG\_02723 \\ \hline
+ASH1 & CNAG\_02723 \\ \hline
+WHI5 & CNAG\_03346 \\ \hline
+STB1 & CNAG\_05861 \\ \hline
+CLB2 & CNAG\_04575 \\ \hline
+CLN3 & CNAG\_04176 \\ \hline
+CLN2 & CNAG\_06818 \\ \hline
+CDC20 & CNAG\_01708 \\ \hline
+\end{tabular}
+\caption{Backbone Expression Orthologs.}
+\end{table}
+
+One observation we immediately see is that there are a few instances where one C. Neoformans gene is the best match with multiple S. Cerevisiae genes. This is not surprising since we know that multiple S. Cerevisiae genes have similar looking time series. Furthermore, we see that the backbone distance does a good job at finding shape in time series, however, it does not take into account timing. We see this in \figref{backbone-orthologs} through some ortholog pairs appearing to be phase shifts of one another (e.g. ACE2 and CNAG\_06818). Depending on the data this can be good or bad. For these datasets, this could be a desired feature if we are not confident that the experiments were synchronized to start at the same point in the cell cycle.
+
+\begin{figure}[htp]
+    \centering
+    {\includegraphics[width=.8\textwidth]{images/backbone-orthologs.png}} \\
+    \caption{Backbone Expression Orthologs}
+    \label{fig:backbone-orthologs}
+\end{figure}
+
+The backbone expression orthologs give us candidates to consider for which genes are driving the cell cycle in C. Neoformans. Using techniques from \cite{BeltonExtremal22} that computes distances over sets of genomic time series that quantifies conservation of order, we find that backbone expression orthologs found here have a much smaller extremal event DAG distance compared to looking at S. Cerevisae genes and sequence orthologs based on ancestry discussed in \cite{KelliherInvestigating16}. This exploration suggests that the C. Neoformans genes found here should be studied more in order to determine if they control the cell cycle or not.
+
+\subsection{Spectral Clustering}
+We apply spectral clustering to the 18 S. Cerevisiae genes and 182 periodic C. Neoformans genes in order to get bins for similar C. Neoformans genes, and see if backbone expression ortholog pairs lie in the same bin. We find the following clusters that we visualize in \figref{spectral-clusters}. We expect that a large percentage of S. Cerevisiae genes lie in the same cluster as their backbone gene expression ortholog pair in C. Neoformans since we used the backbone distance for clustering. We find that this percentage is 13/18 which is decently large but not as large as we were hoping. By visual inspection, some of the clusters contain time series that are pretty close together in shape such as  2, 3, and 19. Other clusters appear to contain quite dissimilar time series such as 5, 7, 11. Overall, it is somewhat difficult to assess if spectral clustering with the backbone distance does a good job at binning C. Neoformans genes or not. 
+
+\begin{figure}[htp]
+    \centering
+    {\includegraphics[width=.9\textwidth]{images/spectral-clustering.png}} \\
+    \caption{Clusters from Spectral Clustering.}
+    \label{fig:spectral-clusters}
+\end{figure}

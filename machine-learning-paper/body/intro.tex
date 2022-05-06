@@ -1,18 +1,24 @@
 \section{Introduction}
-The pathogenic yeast Cryptococcus Neoformans causes fungal meningitis in immune-compromised patients. Virulance factors are affected by cell-cycle perturbations. Hence understanding cell-cycle regulation is critical for understanding the disease. \todo{cite} has demonstrated that a large fraction of genes in Saccharomyces Cerevisiae is expressed periodically during the cell cycle and this is important for proper cell division. Additionally, \todo{cite} found that a similar percentage of genes is periodically expressed during the cell cycle in both yeasts. However, the temporal ordering of periodic expression has diverged for some orthologous cell-cycle genes, especially those related to bud growth. We are interested in studying the question, \textit{Can we use genes that drive the cell-cycle in S. Cerevisiae to find genes that drive the cell cycle in C. Neoformans.?}
+The pathogenic yeast Cryptococcus Neoformans causes fungal meningitis in immune-compromised patients. Virulance factors are affected by cell-cycle perturbations. Hence understanding cell cycle regulation is critical for understanding the disease. A large fraction of genes in Saccharomyces Cerevisiae is expressed periodically during the cell cycle and this is important for proper cell division. Additionally, \cite{KelliherInvestigating16} found that a similar percentage of genes is periodically expressed during the cell cycle in both yeasts. However, the temporal ordering of periodic expression has diverged for some orthologous cell-cycle genes, especially those related to bud growth. We are interested in studying the question, \textit{Can we use genes that drive the cell-cycle in S. Cerevisiae to find genes that drive the cell cycle in C. Neoformans.?}
 
 We study this question by analyzing `omics data that measures expression levels of thousands of genes. Transcription of genes produces messenger RNA (mRNA) which are translated to proteins. Gene expression, measured by either the amount of mRNA produced (transcriptomics) or by the amount of corresponding protein (proteomics), can be used to measure the level of activity of a given gene product. There is strong evidence that the relative phases of oscillating regulators are important to controlling important cellular processes  such as the cell cycle \cite{SimmonsTranscription08}, circadian rhythm, or malaria parasite periodic infection of human blood cells. The assertion of~\cite{BerryUsing20,CumminsModel18} is that the ordering of extrema is a reasonable approximation of control by phase relationship.
 
 To summarize a single gene time series, we construct what we a call a \emph{backbone} which is an ordered sequence of the extrema of the time series and each extremum has a weight that is computed using \emph{persistent homology}.  This technique belongs to a collection of approaches known as
-Topological Data Analysis (TDA) that uses algebraic topology \cite{HatcherAlgebraic02, MunkresElements84} to extract shape from data. We can compare backbones using a backbone distance that is a modified version of the edit distance (Chapter 15 of \cite{CormenIntroduction09})  defined and studied in \todo{cite}. 
+Topological Data Analysis (TDA) that uses algebraic topology \cite{HatcherAlgebraic02, MunkresElements84} to extract shape from data. We can compare backbones using a backbone distance that is a modified version of the edit distance (Chapter 15 of \cite{CormenIntroduction09})  defined and studied in \cite{BeltonExtremal22}. 
 
-In order to study our motivating question, we have two goals for this project: (1) Which genes in C. Neoformans are most similar to genes that run the cell cycle in S. Cerevisiae? and (2) Which genes in C. Neoformans are similar to one another? Question (1) directly relates to our question of interest and question (2) is needed since it is known that many genes in C. Neoformans behave similarly. Hence it is reasonable to assume that a gene in S. Cerevisiae that drives the cell cycle is similar to multiple genes in C. Neoformans. 
+In order to study our motivating question, we attempt to answer two smaller tractable questions: 
+\begin{enumerate}
+\item Which genes in C. Neoformans are most similar to genes that run the cell cycle in S. Cerevisiae? 
+\item Which genes in C. Neoformans are similar to one another? 
+\end{enumerate}
 
- We address our two goals using the following pipeline. 
+Question (1) directly relates to our question of interest and question (2) is needed since it is known that many genes in C. Neoformans behave similarly. Hence we assume that a gene in S. Cerevisiae that drives the cell cycle is potentially similar to multiple genes in C. Neoformans. 
+
+ We address our two questions using the following pipeline. 
 \begin{itemize}
-\item Filter Data. We concentrate on 18 genes in S. Cerevisiae that are known to run the cell cycle. We hypothesize that periodically expressed genes run the cell cycle in C. Neoformans. Hence we compare these 18 genes to periodically expressed genes in C. Neoformans.
+\item Data. We concentrate on 18 genes in S. Cerevisiae that are known to run the cell cycle. We hypothesize that a subset of the 182 periodically expressed genes in C. Neoformans run the cell cycle in that yeast organism. Hence we compare these 18 genes to the 182 periodically expressed genes in C. Neoformans.
 \item Construct Backbones. We construct backbones of all 18 S. Cerevisiae genes and periodically expressed C. Neoformans genes. 
-\item Find best C. Neoformans gene matches to the 18 S. Cerevisiae genes.  We do this by finding which of the C. Neoformans genes minimizes the backbone distance between it and a S. Cerevisiae gene.
-\item Bin genes in C. Neoformans. We do this by applying spectral clustering to the periodically expressed C. Neoformans genes.
+\item Find best C. Neoformans gene matches to the 18 S. Cerevisiae genes.  We do this by finding which of the 182 C. Neoformans genes minimizes the backbone distance between a C. Neoformans gene and a S. Cerevisiae gene.
+\item Bin genes in C. Neoformans. We do this by applying spectral clustering to the 182 periodically expressed C. Neoformans genes.
 \end{itemize}
 
